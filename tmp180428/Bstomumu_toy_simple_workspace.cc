@@ -688,226 +688,226 @@ void Bstomumu_toy_simple_workspace(){
   RooRealVar* mass=new RooRealVar("mass","M_{#mu^{+}#mu^{-}}[ GeV/c^{2}]",4.9,5.9);
   RooRealVar* treco=new RooRealVar("treco","t_{reco}[ps]",1.2,10) ;
   RooRealVar* trecoe=new RooRealVar("trecoe","terr[ps]",0.003,0.26);
-  for(int i=0;i<1;i++){
-  RooWorkspace *wspace = new RooWorkspace("wspace");
-
-  wspace->import(*mass);
-  wspace->import(*treco);
-  wspace->import(*trecoe);
-
-  TFile *sigpdfMC = new TFile("workspcae_signal_BFGH.root");
-  RooWorkspace* Wsig=(RooWorkspace*)sigpdfMC->Get("wspace");
-  TFile *semipdfMC = new TFile("workspcae_semileptonic_BFGH.root");
-  RooWorkspace* Wsemi=(RooWorkspace*)semipdfMC->Get("wspace");
-
-  double bdinput[8]={0.372,0.24,1.309,0.564,0.607,1.195,0.727,1.045};
-  double semiinput[8]={2.027,1.0,9.292,11.328,7.456,5.139,12.997,18.19};
-  double Bsinput[8]={3.02,1.785,10.271,4.509,4.541,8.626,4.989,7.501};
-  double combinput[8]={6.667,6.667,33.333,17.78,22.22,93.33,31.11,51.11};
+  for(int i=0;i<1000;i++){
+    Int_t ObjectNumber=TProcessID::GetObjectCount();
+    RooWorkspace *wspace = new RooWorkspace("wspace");
+    
+    wspace->import(*mass);
+    wspace->import(*treco);
+    wspace->import(*trecoe);
   
-
-
-  //2016BF channel 0
+    TFile *sigpdfMC = new TFile("workspcae_signal_BFGH.root");
+    RooWorkspace* Wsig=(RooWorkspace*)sigpdfMC->Get("wspace");
+    TFile *semipdfMC = new TFile("workspcae_semileptonic_BFGH.root");
+    RooWorkspace* Wsemi=(RooWorkspace*)semipdfMC->Get("wspace");
+    
+    double bdinput[8]={0.372,0.24,1.309,0.564,0.607,1.195,0.727,1.045};
+    double semiinput[8]={2.027,1.0,9.292,11.328,7.456,5.139,12.997,18.19};
+    double Bsinput[8]={3.02,1.785,10.271,4.509,4.541,8.626,4.989,7.501};
+    double combinput[8]={6.667,6.667,33.333,17.78,22.22,93.33,31.11,51.11};
   
-  definemass(wspace, Wsig, Wsemi,0,0, 0.521, 5.277, 0.034, 1.998, 1.191);
-  definelifetimeerr(wspace,Wsig,Wsemi,0,0, 15.236, 0.006,12.4,0.004);
-  lifetimebkg1(wspace,0, 0,0.585 );
-  lifetime(wspace,Wsemi,0, 0);
-  yield(wspace,0, 0, Bsinput[4],combinput[4],semiinput[4],bdinput[4]);
-  TotalPdfdefinition(wspace,0, 0);
-  fit_chan(wspace,0,0,bdinput[4],semiinput[4]);
-  cons_par(wspace,0,0);
-  produceplot(wspace,0,0);
-  RooRealVar* t_BF=wspace->var("TauSig3_0_ch0");
-  cout<<"toy " <<i<<"\t"<<t_BF->getVal()<<"\t"<<t_BF->getErrorHi()<<"\t low "<<t_BF->getErrorLo()<<endl;
-  taumean0=t_BF->getVal();
-  tauerror0=t_BF->getError();
-  double higherror0=fabs(t_BF->getErrorHi());
-  double lowerror0=fabs(t_BF->getErrorLo());
-  double meanlife0=t_BF->getVal();
-  if(higherror0==0)higherror0=t_BF->getError();
-  if(lowerror0==0)lowerror0=t_BF->getError();
-  if(meanlife0 > 1.70){
-    pull0=(meanlife0-1.70)/lowerror0;
+    
+    
+    //2016BF channel 0
+    
+    definemass(wspace, Wsig, Wsemi,0,0, 0.521, 5.277, 0.034, 1.998, 1.191);
+    definelifetimeerr(wspace,Wsig,Wsemi,0,0, 15.236, 0.006,12.4,0.004);
+    lifetimebkg1(wspace,0, 0,0.585 );
+    lifetime(wspace,Wsemi,0, 0);
+    yield(wspace,0, 0, Bsinput[4],combinput[4],semiinput[4],bdinput[4]);
+    TotalPdfdefinition(wspace,0, 0);
+    fit_chan(wspace,0,0,bdinput[4],semiinput[4]);
+    cons_par(wspace,0,0);
+    //produceplot(wspace,0,0);
 
-  }
-  else if(meanlife0 < 1.70){
-    pull0=(meanlife0-1.70)/higherror0;
-  }
-  tree0->Fill();
-  /*  
-  //return;
-  //2016BF channel 1
-  definemass(wspace, Wsig, Wsemi,0,1, 0.51, 5.277, 0.048, 1.818, 1.728);
-  definelifetimeerr(wspace,Wsig,Wsemi,0,1, 10.4, 0.01,12.4,0.004);
-  //lifetimebkg2(wspace,0,1,0.62,4.23,0.75 );
-  lifetime(wspace,Wsemi,0,1);
-  yield(wspace,0,1, Bsinput[5],combinput[5],semiinput[5],bdinput[5]);
-  TotalPdfdefinition2(wspace,0,1,0.62,4.23,0.75);
-  fit_chan(wspace,0,1,bdinput[5],semiinput[5]);
-  cons_par2(wspace,0,1);
-  RooRealVar* t_BF1=wspace->var("TauSig3_0_ch1");
-  cout<<"toy " <<i<<"\t"<<t_BF1->getVal()<<"\t"<<t_BF1->getErrorHi()<<"\t low "<<t_BF1->getErrorLo()<<endl;
-  taumean1=t_BF1->getVal();
-  tauerror1=t_BF1->getError();
-  double higherror1=fabs(t_BF1->getErrorHi());
-  double lowerror1=fabs(t_BF1->getErrorLo());
-  double meanlife1=t_BF1->getVal();
-  if(higherror1==0)higherror1=t_BF1->getError();
-  if(lowerror1==0)lowerror1=t_BF1->getError();
-  if(meanlife1 > 1.70){
-    pull1=(meanlife1-1.70)/lowerror1;
+    RooRealVar* t_BF=wspace->var("TauSig3_0_ch0");
+    cout<<"toy " <<i<<"\t"<<t_BF->getVal()<<"\t"<<t_BF->getErrorHi()<<"\t low "<<t_BF->getErrorLo()<<endl;
+    taumean0=t_BF->getVal();
+    tauerror0=t_BF->getError();
+    double higherror0=fabs(t_BF->getErrorHi());
+    double lowerror0=fabs(t_BF->getErrorLo());
+    double meanlife0=t_BF->getVal();
+    if(higherror0==0)higherror0=t_BF->getError();
+    if(lowerror0==0)lowerror0=t_BF->getError();
+    if(meanlife0 > 1.70){
+      pull0=(meanlife0-1.70)/lowerror0;
+      
+    }
+    else if(meanlife0 < 1.70){
+      pull0=(meanlife0-1.70)/higherror0;
+    }
+    tree0->Fill();
 
-  }
-  else if(meanlife1 < 1.70){
-    pull1=(meanlife1-1.70)/higherror1;
-  }
-  tree1->Fill();
-  
-   // 2016GH channel 0
-  definemass(wspace, Wsig, Wsemi,1,0, 0.516, 5.277, 0.034, 1.998, 1.191);
-  definelifetimeerr(wspace,Wsig,Wsemi,1,0, 20.8, 0.007,12.4,0.004);
-  lifetimebkg1(wspace,1,0,0.658 );
-  lifetime(wspace,Wsemi,1,0);
-  yield(wspace,1,0,  Bsinput[6],combinput[6],semiinput[6],bdinput[6]);
-  TotalPdfdefinition(wspace,1,0);
-  fit_chan(wspace,1,0,bdinput[6],semiinput[6]);
-  cons_par(wspace,1,0);
-  RooRealVar* t_GH=wspace->var("TauSig3_1_ch0");
-  cout<<"toy " <<i<<"\t"<<t_GH->getVal()<<"\t"<<t_GH->getErrorHi()<<"\t low "<<t_GH->getErrorLo()<<endl;
-  taumean2=t_GH->getVal();
-  tauerror2=t_GH->getError();
-  double higherror2=fabs(t_GH->getErrorHi());
-  double lowerror2=fabs(t_GH->getErrorLo());
-  double meanlife2=t_GH->getVal();
-  if(higherror2==0)higherror2=t_GH->getError();
-  if(lowerror2==0)lowerror2=t_GH->getError();
-  if(meanlife2 > 1.70){
-    pull2=(meanlife2-1.70)/lowerror2;
+    //2016BF channel 1
+    definemass(wspace, Wsig, Wsemi,0,1, 0.51, 5.277, 0.048, 1.818, 1.728);
+    definelifetimeerr(wspace,Wsig,Wsemi,0,1, 10.4, 0.01,12.4,0.004);
+    lifetime(wspace,Wsemi,0,1);
+    yield(wspace,0,1, Bsinput[5],combinput[5],semiinput[5],bdinput[5]);
+    TotalPdfdefinition2(wspace,0,1,0.62,4.23,0.75);
+    fit_chan(wspace,0,1,bdinput[5],semiinput[5]);
+    cons_par2(wspace,0,1);
+    RooRealVar* t_BF1=wspace->var("TauSig3_0_ch1");
+    cout<<"toy " <<i<<"\t"<<t_BF1->getVal()<<"\t"<<t_BF1->getErrorHi()<<"\t low "<<t_BF1->getErrorLo()<<endl;
+    taumean1=t_BF1->getVal();
+    tauerror1=t_BF1->getError();
+    double higherror1=fabs(t_BF1->getErrorHi());
+    double lowerror1=fabs(t_BF1->getErrorLo());
+    double meanlife1=t_BF1->getVal();
+    if(higherror1==0)higherror1=t_BF1->getError();
+    if(lowerror1==0)lowerror1=t_BF1->getError();
+    if(meanlife1 > 1.70){
+      pull1=(meanlife1-1.70)/lowerror1;
 
-  }
-  else if(meanlife2 < 1.70){
-    pull2=(meanlife2-1.70)/higherror2;
-  }
-  tree2->Fill();
-  
-  
-  //2016GH channel1
-  definemass(wspace, Wsig, Wsemi,1,1, 0.46, 5.277, 0.048, 1.818, 1.728);
-  definelifetimeerr(wspace,Wsig,Wsemi,1,1, 10.98, 0.007,12.4,0.004);
-  lifetime(wspace,Wsemi,1,1);
-  yield(wspace,1,1,  Bsinput[7],combinput[7],semiinput[7],bdinput[7]);
-  TotalPdfdefinition2(wspace,1,1,0.334,2.527,0.664);
-  fit_chan(wspace,1,1,bdinput[7],semiinput[7]);
-  cons_par2(wspace,1,1);
-  RooRealVar* t_GH1=wspace->var("TauSig3_1_ch1");
-  cout<<"toy " <<i<<"\t"<<t_GH1->getVal()<<"\t"<<t_GH1->getErrorHi()<<"\t low "<<t_GH1->getErrorLo()<<endl;
-  taumean3=t_GH1->getVal();
-  tauerror3=t_GH1->getError();
-  double higherror3=fabs(t_GH1->getErrorHi());
-  double lowerror3=fabs(t_GH1->getErrorLo());
-  double meanlife3=t_GH1->getVal();
-  if(higherror3==0)higherror3=t_GH1->getError();
-  if(lowerror3==0)lowerror3=t_GH1->getError();
-  if(meanlife3 > 1.70){
+    }
+    else if(meanlife1 < 1.70){
+      pull1=(meanlife1-1.70)/higherror1;
+    }
+    tree1->Fill();
+    
+    // 2016GH channel 0
+    definemass(wspace, Wsig, Wsemi,1,0, 0.516, 5.277, 0.034, 1.998, 1.191);
+    definelifetimeerr(wspace,Wsig,Wsemi,1,0, 20.8, 0.007,12.4,0.004);
+    lifetimebkg1(wspace,1,0,0.658 );
+    lifetime(wspace,Wsemi,1,0);
+    yield(wspace,1,0,  Bsinput[6],combinput[6],semiinput[6],bdinput[6]);
+    TotalPdfdefinition(wspace,1,0);
+    fit_chan(wspace,1,0,bdinput[6],semiinput[6]);
+    cons_par(wspace,1,0);
+    RooRealVar* t_GH=wspace->var("TauSig3_1_ch0");
+    cout<<"toy " <<i<<"\t"<<t_GH->getVal()<<"\t"<<t_GH->getErrorHi()<<"\t low "<<t_GH->getErrorLo()<<endl;
+    taumean2=t_GH->getVal();
+    tauerror2=t_GH->getError();
+    double higherror2=fabs(t_GH->getErrorHi());
+    double lowerror2=fabs(t_GH->getErrorLo());
+    double meanlife2=t_GH->getVal();
+    if(higherror2==0)higherror2=t_GH->getError();
+    if(lowerror2==0)lowerror2=t_GH->getError();
+    if(meanlife2 > 1.70){
+      pull2=(meanlife2-1.70)/lowerror2;
+      
+    }
+    else if(meanlife2 < 1.70){
+      pull2=(meanlife2-1.70)/higherror2;
+    }
+    tree2->Fill();
+    
+    
+    //2016GH channel1
+    definemass(wspace, Wsig, Wsemi,1,1, 0.46, 5.277, 0.048, 1.818, 1.728);
+    definelifetimeerr(wspace,Wsig,Wsemi,1,1, 10.98, 0.007,12.4,0.004);
+    lifetime(wspace,Wsemi,1,1);
+    yield(wspace,1,1,  Bsinput[7],combinput[7],semiinput[7],bdinput[7]);
+    TotalPdfdefinition2(wspace,1,1,0.334,2.527,0.664);
+    fit_chan(wspace,1,1,bdinput[7],semiinput[7]);
+    cons_par2(wspace,1,1);
+    RooRealVar* t_GH1=wspace->var("TauSig3_1_ch1");
+    cout<<"toy " <<i<<"\t"<<t_GH1->getVal()<<"\t"<<t_GH1->getErrorHi()<<"\t low "<<t_GH1->getErrorLo()<<endl;
+    taumean3=t_GH1->getVal();
+    tauerror3=t_GH1->getError();
+    double higherror3=fabs(t_GH1->getErrorHi());
+    double lowerror3=fabs(t_GH1->getErrorLo());
+    double meanlife3=t_GH1->getVal();
+    if(higherror3==0)higherror3=t_GH1->getError();
+    if(lowerror3==0)lowerror3=t_GH1->getError();
+    if(meanlife3 > 1.70){
     pull3=(meanlife3-1.70)/lowerror3;
+    
+    }
+    else if(meanlife3 < 1.70){
+      pull3=(meanlife3-1.70)/higherror3;
+    }
+    tree3->Fill();
+    
+    //2012 channel0
+    definemass(wspace, Wsig, Wsemi,2,0, 0.515, 5.277, 0.04, 1.908, 1.429);
+    definelifetimeerr(wspace,Wsig,Wsemi,2,0, 13.4, 0.007,12.4,0.004);
+    lifetimebkg1(wspace,2, 0,0.429 );
+    lifetime(wspace,Wsemi,2, 0);
+    yield(wspace,2,0, Bsinput[2],combinput[2],semiinput[2],bdinput[2]);
+    TotalPdfdefinition(wspace,2, 0);
+    fit_chan(wspace,2,0,bdinput[2],semiinput[2]);
+    cons_par(wspace,2,0);
+    RooRealVar* t_12=wspace->var("TauSig3_2_ch0");
+    cout<<"toy " <<i<<"\t"<<t_12->getVal()<<"\t"<<t_12->getErrorHi()<<"\t low "<<t_12->getErrorLo()<<endl;
+    taumean4=t_12->getVal();
+    tauerror4=t_12->getError();
+    double higherror4=fabs(t_12->getErrorHi());
+    double lowerror4=fabs(t_12->getErrorLo());
+    double meanlife4=t_12->getVal();
+    if(higherror4==0)higherror4=t_12->getError();
+    if(lowerror4==0)lowerror4=t_12->getError();
+    if(meanlife4 > 1.70){
+      pull4=(meanlife4-1.70)/lowerror4;
+      
+    }
+    else if(meanlife4 < 1.70){
+      pull4=(meanlife4-1.70)/higherror4;
+    }
+    tree4->Fill();
 
-  }
-  else if(meanlife3 < 1.70){
-    pull3=(meanlife3-1.70)/higherror3;
-  }
-  tree3->Fill();
-  
-  //2012 channel0
-  definemass(wspace, Wsig, Wsemi,2,0, 0.515, 5.277, 0.04, 1.908, 1.429);
-  definelifetimeerr(wspace,Wsig,Wsemi,2,0, 13.4, 0.007,12.4,0.004);
-  lifetimebkg1(wspace,2, 0,0.429 );
-  lifetime(wspace,Wsemi,2, 0);
-  yield(wspace,2,0, Bsinput[2],combinput[2],semiinput[2],bdinput[2]);
-  TotalPdfdefinition(wspace,2, 0);
-  fit_chan(wspace,2,0,bdinput[2],semiinput[2]);
-  cons_par(wspace,2,0);
-  RooRealVar* t_12=wspace->var("TauSig3_2_ch0");
-  cout<<"toy " <<i<<"\t"<<t_12->getVal()<<"\t"<<t_12->getErrorHi()<<"\t low "<<t_12->getErrorLo()<<endl;
-  taumean4=t_12->getVal();
-  tauerror4=t_12->getError();
-  double higherror4=fabs(t_12->getErrorHi());
-  double lowerror4=fabs(t_12->getErrorLo());
-  double meanlife4=t_12->getVal();
-  if(higherror4==0)higherror4=t_12->getError();
-  if(lowerror4==0)lowerror4=t_12->getError();
-  if(meanlife4 > 1.70){
-    pull4=(meanlife4-1.70)/lowerror4;
-
-  }
-  else if(meanlife4 < 1.70){
-    pull4=(meanlife4-1.70)/higherror4;
-  }
-  tree4->Fill();
-
-  
-  //2012 channel 1
-  definemass(wspace, Wsig, Wsemi,2,1, 0.41, 5.277, 0.062, 1.918, 1.91);
-  definelifetimeerr(wspace,Wsig,Wsemi,2,1, 11.54, 0.009,12.4,0.004);
-  lifetimebkg1(wspace,2,1,0.622 );
-  lifetime(wspace,Wsemi,2,1);
-  yield(wspace,2,1, Bsinput[3],combinput[3],semiinput[3],bdinput[3]);
-  TotalPdfdefinition(wspace,2,1);
-  fit_chan(wspace,2,1,bdinput[3],semiinput[3]);
-  cons_par(wspace,2,1);
-
-  // 2011 channel 0
-  definemass(wspace, Wsig, Wsemi,3,0, 0.531, 5.277, 0.040, 2.139, 0.991);
-  definelifetimeerr(wspace,Wsig,Wsemi,3,0, 18.3, 0.01,12.4,0.004);
-  lifetimebkg1(wspace,3,0,0.517 );
-  lifetime(wspace,Wsemi,3,0);
-  yield(wspace,3,0, Bsinput[0],combinput[0],semiinput[0],bdinput[0]);
-  TotalPdfdefinition(wspace,3,0);
-  fit_chan(wspace,3,0,bdinput[0],semiinput[0]);
-  cons_par(wspace,3,0);
+    
+    //2012 channel 1
+    definemass(wspace, Wsig, Wsemi,2,1, 0.41, 5.277, 0.062, 1.918, 1.91);
+    definelifetimeerr(wspace,Wsig,Wsemi,2,1, 11.54, 0.009,12.4,0.004);
+    lifetimebkg1(wspace,2,1,0.622 );
+    lifetime(wspace,Wsemi,2,1);
+    yield(wspace,2,1, Bsinput[3],combinput[3],semiinput[3],bdinput[3]);
+    TotalPdfdefinition(wspace,2,1);
+    fit_chan(wspace,2,1,bdinput[3],semiinput[3]);
+    cons_par(wspace,2,1);
+    
+    // 2011 channel 0
+    definemass(wspace, Wsig, Wsemi,3,0, 0.531, 5.277, 0.040, 2.139, 0.991);
+    definelifetimeerr(wspace,Wsig,Wsemi,3,0, 18.3, 0.01,12.4,0.004);
+    lifetimebkg1(wspace,3,0,0.517 );
+    lifetime(wspace,Wsemi,3,0);
+    yield(wspace,3,0, Bsinput[0],combinput[0],semiinput[0],bdinput[0]);
+    TotalPdfdefinition(wspace,3,0);
+    fit_chan(wspace,3,0,bdinput[0],semiinput[0]);
+    cons_par(wspace,3,0);
   //2011 channel1
+    
+    definemass(wspace, Wsig, Wsemi,3,1, 0.41, 5.277, 0.060, 1.919, 3.371);
+    definelifetimeerr(wspace,Wsig,Wsemi,3,1, 11.4, 0.007,12.4,0.004);
+    lifetimebkg1(wspace,3,1,0.697);
+    lifetime(wspace,Wsemi,3,1);
+    yield(wspace,3,1, Bsinput[1],combinput[1],semiinput[1],bdinput[1]);
+    TotalPdfdefinition(wspace,3,1);
+    fit_chan(wspace,3,1,bdinput[1],semiinput[1]);
+    cons_par(wspace,3,1);
+    //simultaneous fitting all channel
+    simul_fit(wspace);
+    RooRealVar* t_final=wspace->var("t_wh");
+    cout<<"toy " <<i<<"\t"<<t_final->getVal()<<"\t"<<t_final->getErrorHi()<<"\t low "<<t_final->getErrorLo()<<endl;
+    taumeansimall=t_final->getVal();
+    tauerrorsimall=t_final->getError();
+    double higherror13all=fabs(t_final->getErrorHi());
+    double lowerror13all=fabs(t_final->getErrorLo());
+    double meanlife13all=t_final->getVal();
+    if(higherror13all==0)higherror13all=t_final->getError();
+    if(lowerror13all==0)lowerror13all=t_final->getError();
+    if(meanlife13all > 1.70){
+      pullsimall=(meanlife13all-1.70)/lowerror13all;
+      
+    }
+    else if(meanlife13all < 1.70){
+      pullsimall=(meanlife13all-1.70)/higherror13all;
+    }
+    tree5->Fill();
+    //*/
+    
+    free_par(wspace,0,0);
+    free_par2(wspace,0,1);
+    free_par(wspace,1,0);
+    free_par2(wspace,1,1);
+    free_par(wspace,2,0);
+    free_par(wspace,2,1);
+    free_par(wspace,3,0);
+    free_par(wspace,3,1);
 
-  definemass(wspace, Wsig, Wsemi,3,1, 0.41, 5.277, 0.060, 1.919, 3.371);
-  definelifetimeerr(wspace,Wsig,Wsemi,3,1, 11.4, 0.007,12.4,0.004);
-  lifetimebkg1(wspace,3,1,0.697);
-  lifetime(wspace,Wsemi,3,1);
-  yield(wspace,3,1, Bsinput[1],combinput[1],semiinput[1],bdinput[1]);
-  TotalPdfdefinition(wspace,3,1);
-  fit_chan(wspace,3,1,bdinput[1],semiinput[1]);
-  cons_par(wspace,3,1);
-  
-  simul_fit(wspace);
-  RooRealVar* t_final=wspace->var("t_wh");
-  cout<<"toy " <<i<<"\t"<<t_final->getVal()<<"\t"<<t_final->getErrorHi()<<"\t low "<<t_final->getErrorLo()<<endl;
-  taumeansimall=t_final->getVal();
-  tauerrorsimall=t_final->getError();
-  double higherror13all=fabs(t_final->getErrorHi());
-  double lowerror13all=fabs(t_final->getErrorLo());
-  double meanlife13all=t_final->getVal();
-  if(higherror13all==0)higherror13all=t_final->getError();
-  if(lowerror13all==0)lowerror13all=t_final->getError();
-  if(meanlife13all > 1.70){
-    pullsimall=(meanlife13all-1.70)/lowerror13all;
-
-  }
-  else if(meanlife13all < 1.70){
-    pullsimall=(meanlife13all-1.70)/higherror13all;
-  }
-  tree5->Fill();
-  //*/
-  
-  free_par(wspace,0,0);
-  // free_par2(wspace,0,1);
-  // free_par(wspace,1,0);
-  // free_par2(wspace,1,1);
-  // free_par(wspace,2,0);
-  // free_par(wspace,2,1);
-  // free_par(wspace,3,0);
-  // free_par(wspace,3,1);
-  //wspace->delete();
   sigpdfMC->Close();
   semipdfMC->Close();
-  
+  TProcessID::SetObjectCount(ObjectNumber);  
   }
   file->Write("",TObject::kOverwrite);
 }
